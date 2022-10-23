@@ -2,12 +2,14 @@ package com.empty.heartmonitor
 
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattCharacteristic.FORMAT_SINT16
 import android.content.Context
 import android.util.Log
 import no.nordicsemi.android.ble.BleManager
 import no.nordicsemi.android.ble.ReadRequest
 import no.nordicsemi.android.ble.ValueChangedCallback
 import no.nordicsemi.android.ble.WriteRequest
+import no.nordicsemi.android.ble.data.Data
 import java.util.*
 
 internal class MyBleManager(context: Context) : BleManager(context) {
@@ -45,11 +47,15 @@ internal class MyBleManager(context: Context) : BleManager(context) {
             // sometimes writing something to some Control Point.
             // Kotlin projects should not use suspend methods here, which require a scope.
             readCharacteristic(heartCharacteristic).with { device, data ->
-                Log.d("D_MyBleManager","initialize: ${data.value?.toString()}");
+                Log.d("D_MyBleManager","initialize: ${data.getStringValue(0)}");
+
 
             }.enqueue()
             setNotificationCallback(heartCharacteristic).with { device, data ->
-                Log.d("D_MyBleManager","setNotificationCallback initialize: ${data.getStringValue(0)}");
+                val bmp = data.getStringValue(0)?.toInt()?:0
+                if (bmp > 40)
+                Log.d("D_MyBleManager","setNotificationCallback initialize:${bmp}");
+
             }
             enableNotifications(heartCharacteristic).enqueue()
 
