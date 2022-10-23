@@ -11,7 +11,7 @@ import no.nordicsemi.android.ble.WriteRequest
 import java.util.*
 
 internal class MyBleManager(context: Context) : BleManager(context) {
-    private var fluxCapacitorControlPoint: BluetoothGattCharacteristic? = null
+    private var heartCharacteristic: BluetoothGattCharacteristic? = null
     override fun getMinLogPriority(): Int {
         // Use to return minimal desired logging priority.
         return Log.VERBOSE
@@ -33,10 +33,10 @@ internal class MyBleManager(context: Context) : BleManager(context) {
             val fluxCapacitorService =
                 gatt.getService(SERVICE)
             if (fluxCapacitorService != null) {
-                fluxCapacitorControlPoint =
+                heartCharacteristic =
                     fluxCapacitorService.getCharacteristic(CHARACTERISTIC)
             }
-            return fluxCapacitorControlPoint != null
+            return heartCharacteristic != null
         }
 
         override fun initialize() {
@@ -44,17 +44,14 @@ internal class MyBleManager(context: Context) : BleManager(context) {
             // This means e.g. enabling notifications, setting notification callbacks,
             // sometimes writing something to some Control Point.
             // Kotlin projects should not use suspend methods here, which require a scope.
-            requestMtu(517)
-                .enqueue()
-            setNotificationCallback(
-                BluetoothGattCharacteristic(
-                  CHARACTERISTIC,
-                    BluetoothGattCharacteristic.PROPERTY_READ,
-                    BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED
-                )
-            ).with { device, data ->
-                Log.d("MyGattCallbackImpl","initialize: ${data.value}")
+            readCharacteristic(heartCharacteristic).with { device, data ->
+                Log.d("D_MyBleManager","initialize: ${data.value?.toString()}");
+
+            }.enqueue()
+            setNotificationCallback(heartCharacteristic).with { device, data ->
+                Log.d("D_MyBleManager","setNotificationCallback initialize: ${data.getStringValue(0)}");
             }
+            enableNotifications(heartCharacteristic).enqueue()
 
         }
 
@@ -62,7 +59,7 @@ internal class MyBleManager(context: Context) : BleManager(context) {
             // This method is called when the services get invalidated, i.e. when the device
             // disconnects.
             // References to characteristics should be nullified here.
-            fluxCapacitorControlPoint = null
+            heartCharacteristic = null
         }
     }
 
