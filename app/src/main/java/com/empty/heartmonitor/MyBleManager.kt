@@ -12,7 +12,7 @@ import no.nordicsemi.android.ble.WriteRequest
 import no.nordicsemi.android.ble.data.Data
 import java.util.*
 
-internal class MyBleManager(context: Context) : BleManager(context) {
+internal class MyBleManager(context: Context,private val actionInputBpm: (Int)->Unit) : BleManager(context) {
     private var heartCharacteristic: BluetoothGattCharacteristic? = null
     override fun getMinLogPriority(): Int {
         // Use to return minimal desired logging priority.
@@ -53,7 +53,7 @@ internal class MyBleManager(context: Context) : BleManager(context) {
             }.enqueue()
             setNotificationCallback(heartCharacteristic).with { device, data ->
                 val bmp = data.getStringValue(0)?.toInt()?:0
-                if (bmp > 40)
+                actionInputBpm.invoke(bmp)
                 Log.d("D_MyBleManager","setNotificationCallback initialize:${bmp}");
 
             }

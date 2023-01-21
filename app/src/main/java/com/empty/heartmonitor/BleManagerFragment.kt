@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.empty.heartmonitor.databinding.FragmentBleManagerBinding
+import kotlinx.coroutines.withContext
 import no.nordicsemi.android.ble.PhyRequest
 
 
@@ -47,7 +48,11 @@ class BleManagerFragment : Fragment() {
             .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK or PhyRequest.PHY_LE_2M_MASK or PhyRequest.PHY_LE_CODED_MASK) // A connection timeout can be also set. This is additional to the Android's connection timeout which is 30 seconds.
             .timeout(15000 /* ms */) // Each request has number of callbacks called in different situations:
             .before { device -> }
-            .done { device -> Log.d("BleManagerFragment", ": done ") }
+            .done { device -> Log.d("BleManagerFragment", ": done ")
+                requireActivity().runOnUiThread {
+                    binding.tvCurrentDevice.text = "Device: ${device}"
+                }
+            }
             .fail { device, status -> Log.d("BleManagerFragment", ": fail ${status} ") }
             .then { device ->
 
@@ -95,7 +100,11 @@ class BleManagerFragment : Fragment() {
             ),
             0
         )
-        bleManager = MyBleManager(requireContext())
+        bleManager = MyBleManager(requireContext()){
+            requireActivity().runOnUiThread {
+                binding.tvData.text = it.toString()
+            }
+        }
         binding.btRead.setOnClickListener {
             bleManager.readCharacteristic(
                 BluetoothGattCharacteristic(
