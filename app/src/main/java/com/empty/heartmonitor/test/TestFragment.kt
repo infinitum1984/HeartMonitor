@@ -1,8 +1,11 @@
-package com.empty.heartmonitor
+package com.empty.heartmonitor.test
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.bluetooth.*
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGattService
+import android.bluetooth.BluetoothManager
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
@@ -16,11 +19,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
+import com.empty.heartmonitor.ble.BluetoothLeService
 import com.empty.heartmonitor.databinding.FragmentTestBinding
-
 
 class TestFragment : Fragment() {
 
@@ -28,7 +29,7 @@ class TestFragment : Fragment() {
     private val binding get() = _binding!!
     private val listDevices = arrayListOf<BluetoothDevice>()
 
-    private var bluetoothService : BluetoothLeService? = null
+    private var bluetoothService: BluetoothLeService? = null
     lateinit var bluetoothAdapter: BluetoothAdapter
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
@@ -36,33 +37,33 @@ class TestFragment : Fragment() {
             componentName: ComponentName,
             service: IBinder
         ) {
-            Log.d("TestFragment","onServiceConnected: ")
+            Log.d("TestFragment", "onServiceConnected: ")
             bluetoothService = (service as BluetoothLeService.LocalBinder).getService()
             bluetoothService?.let { bluetooth ->
                 if (!bluetooth.initialize()) {
-                    Log.d("TestFragment","onServiceConnected: Unable to initialize Bluetooth")
-                 }
-                    //bluetooth.connect(currentDevice)
+                    Log.d("TestFragment", "onServiceConnected: Unable to initialize Bluetooth")
+                }
+                //bluetooth.connect(currentDevice)
 
                 // call functions on service to check connection and connect to devices
             }
         }
 
         override fun onServiceDisconnected(componentName: ComponentName) {
-            Log.d("TestFragment","onServiceDisconnected: ")
+            Log.d("TestFragment", "onServiceDisconnected: ")
             bluetoothService = null
         }
     }
     private val gattUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Log.d("TestFragment","onReceive: ${intent.action}")
-            Toast.makeText(requireContext(),"${intent.action}",Toast.LENGTH_LONG).show()
+            Log.d("TestFragment", "onReceive: ${intent.action}")
+            Toast.makeText(requireContext(), "${intent.action}", Toast.LENGTH_LONG).show()
             when (intent.action) {
                 BluetoothLeService.ACTION_GATT_CONNECTED -> {
-                    Log.d("TestFragment","onReceive: ACTION_GATT_CONNECTED")
+                    Log.d("TestFragment", "onReceive: ACTION_GATT_CONNECTED")
                 }
                 BluetoothLeService.ACTION_GATT_DISCONNECTED -> {
-                    Log.d("TestFragment","onReceive: ACTION_GATT_DISCONNECTED")
+                    Log.d("TestFragment", "onReceive: ACTION_GATT_DISCONNECTED")
                 }
                 BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED -> {
                     // Show all the supported services and characteristics on the user interface.
@@ -77,19 +78,23 @@ class TestFragment : Fragment() {
     }
 
     private val listDevicesAdapter = DevicesAdapter({ device ->
-        Log.d("TestFragment",": connect click ${device.name}")
+        Log.d("TestFragment", ": connect click ${device.name}")
         if (bluetoothService != null) {
             val result = bluetoothService!!.connect(device.address)
-            Log.d("TestFragment",": ${result}")
+            Log.d("TestFragment", ": ${result}")
         }
     })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gattServiceIntent = Intent(requireContext(), BluetoothLeService::class.java)
-        val binded = requireActivity().bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
-        Log.d("TestFragment","onCreate: ${binded}")
+        val binded = requireActivity().bindService(
+            gattServiceIntent, serviceConnection,
+            Context.BIND_AUTO_CREATE
+        )
+        Log.d("TestFragment", "onCreate: ${binded}")
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -106,12 +111,12 @@ class TestFragment : Fragment() {
 
         val bluetoothManager: BluetoothManager? =
             requireContext().getSystemService(BluetoothManager::class.java)
-        bluetoothAdapter = bluetoothManager?.getAdapter()!!
-        if (bluetoothAdapter?.isEnabled == false) {
+        bluetoothAdapter = bluetoothManager?.adapter!!
+        if (bluetoothAdapter.isEnabled == false) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, 1)
         }
-        scanLeDevice(bluetoothAdapter!!.bluetoothLeScanner)
+        scanLeDevice(bluetoothAdapter.bluetoothLeScanner)
 
         ActivityCompat.requestPermissions(
             requireActivity(),
@@ -124,11 +129,8 @@ class TestFragment : Fragment() {
         )
 
 
-
-
-
-
     }
+
     override fun onResume() {
         super.onResume()
         requireActivity().registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter())
@@ -146,12 +148,11 @@ class TestFragment : Fragment() {
             addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED)
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
 
 
     private var scanning = false

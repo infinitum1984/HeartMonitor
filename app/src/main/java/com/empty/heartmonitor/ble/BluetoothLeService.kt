@@ -1,5 +1,6 @@
-package com.empty.heartmonitor
+package com.empty.heartmonitor.ble
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.bluetooth.*
 import android.content.Intent
@@ -7,17 +8,16 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 
-private const val TAG = "BluetoothLeService"
-
-
-class BluetoothLeService  : Service(){
+class BluetoothLeService : Service() {
     private val binder = LocalBinder()
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothGatt: BluetoothGatt? = null
     private var connectionState = STATE_DISCONNECTED
+    private val TAG = "BluetoothLeService"
 
+    @SuppressLint("MissingPermission")
     fun connect(bdevice: String): Boolean {
-        Log.d("BluetoothLeService","connectToDevice: ${bdevice}")
+        Log.d("BluetoothLeService", "connectToDevice: ${bdevice}")
         bluetoothAdapter?.let { adapter ->
             try {
                 val device = adapter.getRemoteDevice(bdevice)
@@ -31,6 +31,7 @@ class BluetoothLeService  : Service(){
         }
         return false
     }
+
     fun initialize(): Boolean {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (bluetoothAdapter == null) {
@@ -46,13 +47,14 @@ class BluetoothLeService  : Service(){
     }
 
     inner class LocalBinder : Binder() {
-        fun getService() : BluetoothLeService {
+        fun getService(): BluetoothLeService {
             return this@BluetoothLeService
         }
     }
+
     private val bluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            Log.d("BluetoothLeService","onConnectionStateChange: ${newState}")
+            Log.d("BluetoothLeService", "onConnectionStateChange: ${newState}")
 
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 // successfully connected to the GATT Server
@@ -73,24 +75,29 @@ class BluetoothLeService  : Service(){
             }
         }
     }
+
     fun getSupportedGattServices(): List<BluetoothGattService?>? {
         return bluetoothGatt?.services
     }
+
     private fun broadcastUpdate(action: String) {
         val intent = Intent(action)
         sendBroadcast(intent)
     }
+
     override fun onUnbind(intent: Intent?): Boolean {
         close()
         return super.onUnbind(intent)
     }
 
+    @SuppressLint("MissingPermission")
     private fun close() {
         bluetoothGatt?.let { gatt ->
             gatt.close()
             bluetoothGatt = null
         }
     }
+
     companion object {
         const val ACTION_GATT_CONNECTED =
             "com.example.bluetooth.le.ACTION_GATT_CONNECTED"

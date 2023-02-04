@@ -7,11 +7,11 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.empty.heartmonitor.TestFragment"
+        android:name="com.empty.heartmonitor.test.TestFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_test"/>
     <fragment
         android:id="@+id/bleManagerFragment"
-        android:name="com.empty.heartmonitor.BleManagerFragment"
+        android:name="com.empty.heartmonitor.test.BleManagerFragment"
         android:label="BleManagerFragment" />
 </navigation>

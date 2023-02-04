@@ -1,4 +1,4 @@
-package com.empty.heartmonitor
+package com.empty.heartmonitor.test
 
 import android.bluetooth.BluetoothDevice
 import android.view.LayoutInflater
@@ -27,7 +27,7 @@ class DevicesAdapter(private val onClickAction: (device: BluetoothDevice) -> Uni
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DevicesViewHolder {
-        val binding = DeviceItemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        val binding = DeviceItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DevicesViewHolder(binding)
     }
 

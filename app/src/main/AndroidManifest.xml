@@ -3,9 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.empty.heartmonitor">
     <!-- Request legacy Bluetooth permissions on older devices. -->
-    <uses-permission android:name="android.permission.BLUETOOTH"
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
         android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
         android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
@@ -21,19 +23,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HeartMonitor"
-        tools:targetApi="31">
+        android:name=".app.HeartMonitorApp"
+        tools:targetApi="31"
+        tools:ignore="CoarseFineLocation">
         <activity
-            android:name=".MainActivity"
+            android:name=".drawer.DrawerActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.HeartMonitor">
+            android:theme="@style/Theme.HeartMonitor.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".BluetoothLeService"/>
+        <activity
+            android:name=".test.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.HeartMonitor">
+
+        </activity>
+
+        <service android:name=".ble.BluetoothLeService" />
     </application>
 
 </manifest>

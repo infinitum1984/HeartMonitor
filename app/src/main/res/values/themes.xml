@@ -1,9 +1,18 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.HeartMonitor" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.HeartMonitor" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
     <style name="Theme.HeartMonitor" parent="Base.Theme.HeartMonitor" />
+
+    <style name="Theme.HeartMonitor.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.HeartMonitor.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.HeartMonitor.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

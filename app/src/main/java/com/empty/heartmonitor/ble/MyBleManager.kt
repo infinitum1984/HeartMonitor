@@ -1,18 +1,22 @@
-package com.empty.heartmonitor
+package com.empty.heartmonitor.ble
 
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattCharacteristic.FORMAT_SINT16
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import no.nordicsemi.android.ble.BleManager
 import no.nordicsemi.android.ble.ReadRequest
 import no.nordicsemi.android.ble.ValueChangedCallback
 import no.nordicsemi.android.ble.WriteRequest
-import no.nordicsemi.android.ble.data.Data
 import java.util.*
 
-internal class MyBleManager(context: Context,private val actionInputBpm: (Int)->Unit) : BleManager(context) {
+class MyBleManager(context: Context) : BleManager(context) {
+    private val bmpChannel = Channel<Int>(Channel.BUFFERED)
+    val bmpFlow: Flow<Int>
+        get() = bmpChannel.receiveAsFlow()
     private var heartCharacteristic: BluetoothGattCharacteristic? = null
     override fun getMinLogPriority(): Int {
         // Use to return minimal desired logging priority.
@@ -47,14 +51,14 @@ internal class MyBleManager(context: Context,private val actionInputBpm: (Int)->
             // sometimes writing something to some Control Point.
             // Kotlin projects should not use suspend methods here, which require a scope.
             readCharacteristic(heartCharacteristic).with { device, data ->
-                Log.d("D_MyBleManager","initialize: ${data.getStringValue(0)}");
+                Log.d("D_MyBleManager", "initialize: ${data.getStringValue(0)}")
 
 
             }.enqueue()
             setNotificationCallback(heartCharacteristic).with { device, data ->
-                val bmp = data.getStringValue(0)?.toInt()?:0
-                actionInputBpm.invoke(bmp)
-                Log.d("D_MyBleManager","setNotificationCallback initialize:${bmp}");
+                val bmp = data.getStringValue(0)?.toInt() ?: 0
+                bmpChannel.trySend(bmp)
+                Log.d("D_MyBleManager", "setNotificationCallback initialize:${bmp}")
 
             }
             enableNotifications(heartCharacteristic).enqueue()
