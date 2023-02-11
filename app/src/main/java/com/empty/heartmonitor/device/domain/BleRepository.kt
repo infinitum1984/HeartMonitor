@@ -1,6 +1,5 @@
 package com.empty.heartmonitor.device.domain
 
-import com.empty.heartmonitor.device.data.ConnectResult
 import kotlinx.coroutines.flow.Flow
 
 

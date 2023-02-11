@@ -14,8 +14,8 @@ import no.nordicsemi.android.ble.WriteRequest
 import java.util.*
 
 class MyBleManager(context: Context) : BleManager(context) {
-    private val bmpChannel = Channel<Int>(Channel.BUFFERED)
-    val bmpFlow: Flow<Int>
+    private val bmpChannel = Channel<BleData>(Channel.BUFFERED)
+    val bmpFlow: Flow<BleData>
         get() = bmpChannel.receiveAsFlow()
     private var heartCharacteristic: BluetoothGattCharacteristic? = null
     override fun getMinLogPriority(): Int {
@@ -56,9 +56,9 @@ class MyBleManager(context: Context) : BleManager(context) {
 
             }.enqueue()
             setNotificationCallback(heartCharacteristic).with { device, data ->
-//                val bmp = data.getStringValue(0)?.toInt() ?: 0
-//                bmpChannel.trySend(bmp)
-                //Log.d("D_MyBleManager", "setNotificationCallback initialize:${bmp}")
+                val rawData = data.getStringValue(0) ?: ""
+
+                Log.d("D_MyBleManager", "setNotificationCallback initialize:${rawData}")
 
             }
             enableNotifications(heartCharacteristic).enqueue()
