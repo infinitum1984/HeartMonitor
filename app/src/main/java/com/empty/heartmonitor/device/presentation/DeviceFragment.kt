@@ -9,60 +9,78 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.ComposeView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.empty.heartmonitor.databinding.FragmentDeviceBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DeviceFragment : Fragment() {
 
-    private var _binding: FragmentDeviceBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
     private val viewModel: DeviceViewModel by viewModel()
+
     val permissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
-                viewModel.startScanning()
+                blePermissionLauncher.launch(Manifest.permission.BLUETOOTH_ADMIN)
             }
         }
+    val blePermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            viewModel.startScanning()
+        }
+    }
+
+    val listNearbyDevices get() =  viewModel.listDevices
+    val connectedDevice get() =  viewModel.connectedDevice
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDeviceBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textHome
-        viewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        return ComposeView(requireContext()).apply {
+            setContent {
+                DeviceScreen(this@DeviceFragment)
+            }
         }
-        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkPermissions()
         enableBluetooth()
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ),
+            0
+        )
+    }
+
+    fun connectToDevice(device: String){
+        viewModel.connectToDevice(device)
     }
 
     private fun enableBluetooth() {
-        val bluetoothManager: BluetoothManager? =
-            requireContext().getSystemService(BluetoothManager::class.java)
-        bluetoothManager?.adapter?.let {
-            if (!it.isEnabled) {
-                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                startActivityForResult(enableBtIntent, 1)
-            }
-        }
+//        val bluetoothManager: BluetoothManager? =
+//            requireContext().getSystemService(BluetoothManager::class.java)
+//        bluetoothManager?.adapter?.let {
+//            if (!it.isEnabled) {
+//                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+//                startActivityForResult(enableBtIntent, 1)
+//            }
+//        }
     }
 
     private fun checkPermissions() {
@@ -70,6 +88,10 @@ class DeviceFragment : Fragment() {
             ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.BLUETOOTH_SCAN
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             viewModel.startScanning()
@@ -80,6 +102,5 @@ class DeviceFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
     }
 }

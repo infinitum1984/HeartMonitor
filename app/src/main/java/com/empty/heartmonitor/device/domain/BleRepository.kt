@@ -1,5 +1,6 @@
 package com.empty.heartmonitor.device.domain
 
+import com.empty.heartmonitor.device.data.ConnectResult
 import kotlinx.coroutines.flow.Flow
 
 
@@ -13,5 +14,5 @@ interface BleRepository {
 
     fun stopScan()
 
-    fun connect(deviceAdders: String)
+    suspend fun connect(deviceAdders: String)
 }

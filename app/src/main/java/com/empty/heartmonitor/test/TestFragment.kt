@@ -77,6 +77,7 @@ class TestFragment : Fragment() {
 
     }
 
+    @SuppressLint("MissingPermission")
     private val listDevicesAdapter = DevicesAdapter({ device ->
         Log.d("TestFragment", ": connect click ${device.name}")
         if (bluetoothService != null) {
@@ -184,6 +185,7 @@ class TestFragment : Fragment() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun addDevice(device: BluetoothDevice) {
         if (listDevices.firstOrNull { it.address == device.address } == null) {
             Log.d("TestFragment", "onScanResult: ${device.name} ${device.address}")

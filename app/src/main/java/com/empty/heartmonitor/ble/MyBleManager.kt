@@ -56,9 +56,9 @@ class MyBleManager(context: Context) : BleManager(context) {
 
             }.enqueue()
             setNotificationCallback(heartCharacteristic).with { device, data ->
-                val bmp = data.getStringValue(0)?.toInt() ?: 0
-                bmpChannel.trySend(bmp)
-                Log.d("D_MyBleManager", "setNotificationCallback initialize:${bmp}")
+//                val bmp = data.getStringValue(0)?.toInt() ?: 0
+//                bmpChannel.trySend(bmp)
+                //Log.d("D_MyBleManager", "setNotificationCallback initialize:${bmp}")
 
             }
             enableNotifications(heartCharacteristic).enqueue()

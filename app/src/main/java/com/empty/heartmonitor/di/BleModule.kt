@@ -8,6 +8,6 @@ import org.koin.dsl.module
 val bleModule = module {
     single { MyBleManager(androidContext()) }
     single {
-        androidContext().getSystemService(BluetoothManager::class.java).adapter.bluetoothLeScanner
+        androidContext().applicationContext.getSystemService(BluetoothManager::class.java).adapter.bluetoothLeScanner
     }
 }
