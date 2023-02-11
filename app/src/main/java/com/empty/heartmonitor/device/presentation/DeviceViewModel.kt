@@ -2,9 +2,9 @@ package com.empty.heartmonitor.device.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.empty.heartmonitor.ble.domain.BleRepository
+import com.empty.heartmonitor.ble.domain.BluetoothDeviceDomain
 import com.empty.heartmonitor.core.mapper.MapperBase
-import com.empty.heartmonitor.device.domain.BleRepository
-import com.empty.heartmonitor.device.domain.BluetoothDeviceDomain
 import com.empty.heartmonitor.device.presentation.model.BluetoothDeviceUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class DeviceViewModel(private val bleRepository: BleRepository,
-                    private val mapper: MapperBase<BluetoothDeviceDomain, BluetoothDeviceUi>
+                      private val mapper: MapperBase<BluetoothDeviceDomain, BluetoothDeviceUi>
                       ) : ViewModel() {
 
     private val _listDevices= MutableStateFlow<List<BluetoothDeviceUi>>(listOf())

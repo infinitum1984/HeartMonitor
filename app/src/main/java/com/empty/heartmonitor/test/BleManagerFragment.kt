@@ -18,8 +18,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.empty.heartmonitor.ble.BluetoothLeService
-import com.empty.heartmonitor.ble.MyBleManager
+import com.empty.heartmonitor.ble.data.BluetoothLeService
+import com.empty.heartmonitor.ble.data.MyBleManager
 import com.empty.heartmonitor.databinding.FragmentBleManagerBinding
 import no.nordicsemi.android.ble.PhyRequest
 

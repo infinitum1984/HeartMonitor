@@ -1,4 +1,4 @@
-package com.empty.heartmonitor.device.data
+package com.empty.heartmonitor.ble.data
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
@@ -6,12 +6,13 @@ import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.util.Log
-import com.empty.heartmonitor.ble.MyBleManager
+import com.empty.heartmonitor.ble.domain.BleDataDomain
+import com.empty.heartmonitor.ble.domain.BleRepository
+import com.empty.heartmonitor.ble.domain.BluetoothDeviceDomain
 import com.empty.heartmonitor.core.mapper.MapperBase
-import com.empty.heartmonitor.device.domain.BleRepository
-import com.empty.heartmonitor.device.domain.BluetoothDeviceDomain
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import no.nordicsemi.android.ble.PhyRequest
 import kotlin.coroutines.resume
@@ -21,7 +22,9 @@ import kotlin.coroutines.suspendCoroutine
 class BaseBleRepository(
     private val bleManager: MyBleManager,
     private val bleScanner: BluetoothLeScanner,
-    private val mapper: MapperBase<BluetoothDevice, BluetoothDeviceDomain>
+    private val mapper: MapperBase<BluetoothDevice, BluetoothDeviceDomain>,
+    private val mapperData: MapperBase<BleData, BleDataDomain>
+
 ) : BleRepository {
     private val connectedDeviceChannel = Channel<BluetoothDeviceDomain>(Channel.BUFFERED)
     override val connectedDevice: Flow<BluetoothDeviceDomain>
@@ -30,12 +33,14 @@ class BaseBleRepository(
     private val nearbyDevicesChannel = Channel<List<BluetoothDeviceDomain>>(Channel.BUFFERED)
     override val listNearbyDevices: Flow<List<BluetoothDeviceDomain>>
         get() = nearbyDevicesChannel.receiveAsFlow()
+    override val bleData: Flow<BleDataDomain>
+        get() = bleManager.bleDataFlow.map { mapperData.map(it) }
 
     private val listDevices = arrayListOf<BluetoothDevice>()
 
     @SuppressLint("MissingPermission")
     override fun startScan() {
-        Log.d("BaseBleRepository","startScan: ")
+        Log.d("BaseBleRepository", "startScan: ")
         bleScanner.startScan(leScanCallback)
     }
 
@@ -65,7 +70,7 @@ class BaseBleRepository(
     }
 
     override suspend fun connect(deviceAdders: String)  =
-         suspendCoroutine {cont->
+        suspendCoroutine<Unit> { cont ->
             listDevices.find { it.address == deviceAdders }?.let {
                 bleManager.connect(it) // Automatic retries are supported, in case of 133 error.
                     .retry(
@@ -86,7 +91,6 @@ class BaseBleRepository(
                     .fail { device, status -> Log.d("BleManagerFragment", ": fail ${status} ")
                         cont.resumeWithException(Exception("${status}"))
                     }
-
                     .enqueue()
             }
 

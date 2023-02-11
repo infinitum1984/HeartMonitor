@@ -1,4 +1,4 @@
-package com.empty.heartmonitor.device.domain
+package com.empty.heartmonitor.ble.domain
 
 data class BluetoothDeviceDomain(
     val name: String,

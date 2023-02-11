@@ -1,10 +1,10 @@
-package com.empty.heartmonitor.device.mapper
+package com.empty.heartmonitor.ble.mapper
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import com.empty.heartmonitor.ble.domain.BluetoothDeviceDomain
+import com.empty.heartmonitor.ble.domain.BoundState
 import com.empty.heartmonitor.core.mapper.MapperBase
-import com.empty.heartmonitor.device.domain.BluetoothDeviceDomain
-import com.empty.heartmonitor.device.domain.BoundState
 
 class BluetoothDeviceMapper : MapperBase<BluetoothDevice, BluetoothDeviceDomain>() {
     @SuppressLint("MissingPermission")

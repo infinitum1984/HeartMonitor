@@ -1,4 +1,4 @@
-package com.empty.heartmonitor.ble
+package com.empty.heartmonitor.ble.data
 
 import android.annotation.SuppressLint
 import android.app.Service

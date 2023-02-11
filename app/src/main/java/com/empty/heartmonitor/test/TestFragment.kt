@@ -20,7 +20,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.empty.heartmonitor.ble.BluetoothLeService
+import com.empty.heartmonitor.ble.data.BluetoothLeService
 import com.empty.heartmonitor.databinding.FragmentTestBinding
 
 class TestFragment : Fragment() {

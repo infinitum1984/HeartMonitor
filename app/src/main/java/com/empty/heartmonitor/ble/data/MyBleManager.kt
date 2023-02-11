@@ -1,4 +1,4 @@
-package com.empty.heartmonitor.ble
+package com.empty.heartmonitor.ble.data
 
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
@@ -14,9 +14,9 @@ import no.nordicsemi.android.ble.WriteRequest
 import java.util.*
 
 class MyBleManager(context: Context) : BleManager(context) {
-    private val bmpChannel = Channel<BleData>(Channel.BUFFERED)
-    val bmpFlow: Flow<BleData>
-        get() = bmpChannel.receiveAsFlow()
+    private val bleDataChannel = Channel<BleData>(Channel.BUFFERED)
+    val bleDataFlow: Flow<BleData>
+        get() = bleDataChannel.receiveAsFlow()
     private var heartCharacteristic: BluetoothGattCharacteristic? = null
     override fun getMinLogPriority(): Int {
         // Use to return minimal desired logging priority.
@@ -50,15 +50,21 @@ class MyBleManager(context: Context) : BleManager(context) {
             // This means e.g. enabling notifications, setting notification callbacks,
             // sometimes writing something to some Control Point.
             // Kotlin projects should not use suspend methods here, which require a scope.
-            readCharacteristic(heartCharacteristic).with { device, data ->
-                Log.d("D_MyBleManager", "initialize: ${data.getStringValue(0)}")
-
-
-            }.enqueue()
             setNotificationCallback(heartCharacteristic).with { device, data ->
                 val rawData = data.getStringValue(0) ?: ""
+                try {
+                    bleDataChannel.trySend(
+                        BleData.fromStr(rawData)
+                    )
+                    Log.d(
+                        "D_MyBleManager",
+                        "setNotificationCallback initialize:${BleData.fromStr(rawData)}"
+                    )
 
-                Log.d("D_MyBleManager", "setNotificationCallback initialize:${rawData}")
+                } catch (e: Exception) {
+                    Log.e("D_MyBleManager", "${e.message}")
+
+                }
 
             }
             enableNotifications(heartCharacteristic).enqueue()

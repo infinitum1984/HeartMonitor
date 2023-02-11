@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.empty.heartmonitor.databinding.FragmentHeartBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HeartFragment : Fragment() {
 
@@ -17,22 +20,35 @@ class HeartFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private val viewModel: HeartViewModel by viewModel()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val galleryViewModel =
-            ViewModelProvider(this).get(HeartViewModel::class.java)
-
         _binding = FragmentHeartBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        val textView: TextView = binding.textGallery
-        galleryViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.observe()
+        binding.masureBt.setOnClickListener {
+            viewModel.startMeasure()
+        }
+    }
+
+    fun HeartViewModel.observe() {
+        heartBpm.onEach {
+            binding.heartRateTv.text = it.toString()
+        }.launchIn(lifecycleScope)
+        measuredBpm.onEach {
+            binding.masuredTv.text = it.toString()
+        }.launchIn(lifecycleScope)
+        isMeasuring.onEach {
+            binding.measureGroup.isVisible = it
+        }.launchIn(lifecycleScope)
     }
 
     override fun onDestroyView() {

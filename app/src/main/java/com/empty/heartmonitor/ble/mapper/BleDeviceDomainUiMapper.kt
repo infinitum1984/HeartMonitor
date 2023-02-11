@@ -1,7 +1,7 @@
-package com.empty.heartmonitor.device.mapper
+package com.empty.heartmonitor.ble.mapper
 
+import com.empty.heartmonitor.ble.domain.BluetoothDeviceDomain
 import com.empty.heartmonitor.core.mapper.MapperBase
-import com.empty.heartmonitor.device.domain.BluetoothDeviceDomain
 import com.empty.heartmonitor.device.presentation.model.BluetoothDeviceUi
 
 class BleDeviceDomainUiMapper: MapperBase<BluetoothDeviceDomain, BluetoothDeviceUi>() {

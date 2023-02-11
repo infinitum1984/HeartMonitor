@@ -1,4 +1,4 @@
-package com.empty.heartmonitor.ble
+package com.empty.heartmonitor.ble.data
 
 
 data class BleData(
@@ -7,7 +7,7 @@ data class BleData(
     val isTouched: Boolean,
 ){
     companion object{
-        fun fromStr(inputRawData: String): BleData{
+        fun fromStr(inputRawData: String): BleData {
             val splitArray = inputRawData.split(",")
             return BleData(
                 bpm = splitArray[0].toDouble(),
