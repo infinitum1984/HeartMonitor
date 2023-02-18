@@ -1,4 +1,4 @@
-package com.empty.heartmonitor.heart
+package com.empty.heartmonitor.temperature
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -11,27 +11,26 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
-class HeartViewModel(private val bleRepository: BleRepository) : ViewModel() {
+class TemperatureViewModel(private val bleRepository: BleRepository) : ViewModel() {
 
-    private val _heartBpm = MutableStateFlow(0)
-    val heartBpm = _heartBpm.asStateFlow()
+    private val _temperature = MutableStateFlow(0.0)
+    val temperature = _temperature.asStateFlow()
 
-    private val _measuredBpm = MutableStateFlow(0)
-    val measuredBpm = _measuredBpm.asStateFlow()
+    private val _measuredTemperature = MutableStateFlow(0.0)
+    val measuredTemperature = _measuredTemperature.asStateFlow()
 
     private val _isMeasuring = MutableStateFlow(false)
     val isMeasuring = _isMeasuring.asStateFlow()
 
 
-    private val measuredArray = arrayListOf<Int>()
+    private val measuredArray = arrayListOf<Double>()
 
     init {
         bleRepository.bleData.onEach {
-            _heartBpm.emit(it.avgBpm)
+            _temperature.emit(it.temperature)
             if (isMeasuring.value)
-                measuredArray.add(it.avgBpm)
+                measuredArray.add(it.temperature)
         }.launchIn(viewModelScope)
     }
 
@@ -44,7 +43,7 @@ class HeartViewModel(private val bleRepository: BleRepository) : ViewModel() {
                 Log.d("HeartViewModel", "${measuredArray.size}")
                 Log.d("HeartViewModel", "${measuredArray}")
 
-                _measuredBpm.emit(measuredArray.average().roundToInt())
+                _measuredTemperature.emit(measuredArray.average())
                 measuredArray.clear()
             }
     }

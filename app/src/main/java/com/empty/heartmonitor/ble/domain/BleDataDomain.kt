@@ -1,8 +1,7 @@
 package com.empty.heartmonitor.ble.domain
 
 data class BleDataDomain(
-    val bpm: Double,
     val avgBpm: Int,
-    val temperature: Int,
+    val temperature: Double,
     val isTouched: Boolean,
 )

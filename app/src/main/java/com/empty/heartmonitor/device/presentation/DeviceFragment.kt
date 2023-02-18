@@ -73,14 +73,14 @@ class DeviceFragment : Fragment() {
     }
 
     private fun enableBluetooth() {
-//        val bluetoothManager: BluetoothManager? =
-//            requireContext().getSystemService(BluetoothManager::class.java)
-//        bluetoothManager?.adapter?.let {
-//            if (!it.isEnabled) {
-//                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-//                startActivityForResult(enableBtIntent, 1)
-//            }
-//        }
+        val bluetoothManager: BluetoothManager? =
+            requireContext().getSystemService(BluetoothManager::class.java)
+        bluetoothManager?.adapter?.let {
+            if (!it.isEnabled) {
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                startActivityForResult(enableBtIntent, 1)
+            }
+        }
     }
 
     private fun checkPermissions() {
@@ -94,13 +94,11 @@ class DeviceFragment : Fragment() {
                 Manifest.permission.BLUETOOTH_SCAN
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            enableBluetooth()
             viewModel.startScanning()
         } else {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
 }

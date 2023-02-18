@@ -37,13 +37,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".test.MainActivity"
-            android:exported="false"
-            android:theme="@style/Theme.HeartMonitor">
-
-        </activity>
-
         <service android:name=".ble.data.BluetoothLeService" />
     </application>
 
