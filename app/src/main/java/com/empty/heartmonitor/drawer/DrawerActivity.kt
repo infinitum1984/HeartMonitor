@@ -12,7 +12,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.empty.heartmonitor.R
 import com.empty.heartmonitor.databinding.ActivityDrawerBinding
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 
 class DrawerActivity : AppCompatActivity() {
 
@@ -27,10 +26,6 @@ class DrawerActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarDrawer.toolbar)
 
-        binding.appBarDrawer.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_drawer)

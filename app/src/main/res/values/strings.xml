@@ -56,4 +56,6 @@
     <string name="menu_heart">Серцебиття</string>
     <string name="menu_settings">Налаштування</string>
     <string name="temperature">Температура</string>
+    <string name="channel_name">HealthMonitor</string>
+    <string name="channel_description">Health tracking</string>
 </resources>
