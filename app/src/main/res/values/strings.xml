@@ -58,4 +58,9 @@
     <string name="temperature">Температура</string>
     <string name="channel_name">HealthMonitor</string>
     <string name="channel_description">Health tracking</string>
+    <string name="lowBpm">Низький пульс!</string>
+    <string name="highBpm">Завсисокий пульс, вам треба заспокоїтись!</string>
+    <string name="normalBpm">Показники в нормі</string>
+    <string name="connectDevice">Підключіть пристрій!</string>
+    <string name="track">Моніторинг</string>
 </resources>

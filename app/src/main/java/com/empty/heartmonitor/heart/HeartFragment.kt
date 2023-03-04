@@ -44,7 +44,10 @@ class HeartFragment : Fragment() {
             binding.heartRateTv.text = it.toString()
         }.launchIn(lifecycleScope)
         measuredBpm.onEach {
-            binding.masuredTv.text = it.toString()
+            it?.let {
+                binding.masuredTv.text = it.first
+                binding.conclusionTv.text = it.second
+            }
         }.launchIn(lifecycleScope)
         isMeasuring.onEach {
             binding.measureGroup.isVisible = it

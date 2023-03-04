@@ -2,7 +2,9 @@ package com.empty.heartmonitor.di
 
 import android.bluetooth.BluetoothManager
 import com.empty.heartmonitor.ble.data.BaseBleRepository
+import com.empty.heartmonitor.ble.data.BleDataAnalyzerBase
 import com.empty.heartmonitor.ble.data.MyBleManager
+import com.empty.heartmonitor.ble.domain.BleDataAnalyzer
 import com.empty.heartmonitor.ble.domain.BleRepository
 import com.empty.heartmonitor.ble.mapper.BleDataDomainMapper
 import com.empty.heartmonitor.ble.mapper.BleDeviceDomainUiMapper
@@ -26,5 +28,6 @@ val bleModule = module {
             get<BleDataDomainMapper>()
         )
     }
+    factory<BleDataAnalyzer> { BleDataAnalyzerBase(androidContext()) }
 
 }

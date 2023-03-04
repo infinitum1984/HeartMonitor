@@ -8,5 +8,5 @@ import org.koin.dsl.module
 
 val trackingModule = module {
     single<TrackingNotificationManager> { TrackingNotificationManagerBase(androidContext()) }
-    single { BleDomainToNotificationData() }
+    single { BleDomainToNotificationData(get()) }
 }

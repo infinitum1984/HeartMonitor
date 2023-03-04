@@ -36,7 +36,7 @@ class TrackingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("D_TrackingService", "onStartCommand: start service")
-        trackingNotificationManager.showHealthInfo(mapper.map(BleDataDomain(60, 45.0, false)))
+        trackingNotificationManager.showHealthInfo(mapper.map(BleDataDomain(0, 0.0, false)))
 
         bleRepository.bleData.onEach {
             Log.d("D_TrackingService", "on each data ${it}")

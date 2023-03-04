@@ -4,13 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.empty.heartmonitor.R
 import com.empty.heartmonitor.databinding.FragmentTemperatureBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class TemperatureFragment : Fragment() {
 
@@ -30,6 +34,8 @@ class TemperatureFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val pulse: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.pulse)
+        binding.tempImg.startAnimation(pulse)
         viewModel.observe()
         binding.masureBt.setOnClickListener {
             viewModel.startMeasure()
@@ -41,7 +47,10 @@ class TemperatureFragment : Fragment() {
             binding.temperatureTv.text = "$it°C"
         }.launchIn(lifecycleScope)
         measuredTemperature.onEach {
-            binding.masuredTv.text = it.toString()
+            it?.let {
+                binding.masuredTv.text = it.first
+                binding.conclusionTv.text = it.second
+            }
         }.launchIn(lifecycleScope)
         isMeasuring.onEach {
             binding.measureGroup.isVisible = it

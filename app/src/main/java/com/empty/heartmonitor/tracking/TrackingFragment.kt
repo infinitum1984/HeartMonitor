@@ -31,8 +31,6 @@ class TrackingFragment : Fragment() {
 
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-
         return root
     }
 
@@ -46,20 +44,18 @@ class TrackingFragment : Fragment() {
             binding.button.tag = "1"
             binding.button.text = "Запустити відстежування"
         }
-        requireContext().applicationContext.startForegroundService(
-            Intent(
-                requireContext(),
-                TrackingService::class.java
-            )
-        )
         binding.button.setOnClickListener {
             when (binding.button.tag) {
-                "0" -> requireContext().applicationContext.stopService(
-                    Intent(
-                        requireContext(),
-                        TrackingService::class.java
+                "0" -> {
+                    requireContext().applicationContext.stopService(
+                        Intent(
+                            requireContext(),
+                            TrackingService::class.java
+                        )
                     )
-                )
+                    binding.button.tag = "1"
+                    binding.button.text = "Запустити відстежування"
+                }
                 "1" -> {
                     requireContext().applicationContext.startForegroundService(
                         Intent(
@@ -67,6 +63,8 @@ class TrackingFragment : Fragment() {
                             TrackingService::class.java
                         )
                     )
+                    binding.button.text = "Зупинити відстежування"
+                    binding.button.tag = "0"
                 }
             }
         }

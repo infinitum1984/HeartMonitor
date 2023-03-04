@@ -17,8 +17,8 @@
             android:icon="@drawable/thermostat"
             android:title="@string/temperature" />
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/settings"
-            android:title="@string/menu_settings" />
+            android:id="@+id/nav_track"
+            android:icon="@drawable/track"
+            android:title="@string/track" />
     </group>
 </menu>

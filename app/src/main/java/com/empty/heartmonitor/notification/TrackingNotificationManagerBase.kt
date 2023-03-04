@@ -25,14 +25,11 @@ class TrackingNotificationManagerBase(private val context: Context) : TrackingNo
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the NotificationChannel
             val name = context.getString(R.string.channel_name)
             val descriptionText = context.getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_LOW
             val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
             mChannel.description = descriptionText
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             notificationManager.createNotificationChannel(mChannel)
         }
     }
@@ -40,7 +37,7 @@ class TrackingNotificationManagerBase(private val context: Context) : TrackingNo
     override fun bindForeground(service: Service) {
         service.startForeground(
             NOTIFICATION_ID,
-            getNotification(NotificationHealthData(0, 0.0, "", R.color.black))
+            getNotification(NotificationHealthData(0, 0.0, "", R.color.normalTextColor))
         )
     }
 
@@ -49,10 +46,17 @@ class TrackingNotificationManagerBase(private val context: Context) : TrackingNo
         notificationManager.notify(NOTIFICATION_ID, getNotification(data))
     }
 
+    @SuppressLint("RemoteViewLayout")
     private fun getNotification(data: NotificationHealthData): Notification {
         val notificationLayout =
             RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_small)
-        notificationLayout.setTextViewText(R.id.bpm, "${data.bpm}, ${data.temperature}")
+        notificationLayout.setTextViewText(R.id.bpm, "${data.bpm}уд/хв")
+        notificationLayout.setTextViewText(R.id.temp, "${data.temperature}°C")
+        notificationLayout.setTextColor(
+            R.id.infoText,
+            context.resources.getColor(data.textColorRes)
+        )
+        notificationLayout.setTextViewText(R.id.infoText, data.infoText)
         val customNotification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())

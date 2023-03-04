@@ -17,8 +17,6 @@ import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DeviceFragment : Fragment() {
-
-
     private val viewModel: DeviceViewModel by viewModel()
 
     val permissionLauncher =
@@ -99,6 +97,10 @@ class DeviceFragment : Fragment() {
         } else {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+    }
+
+    fun disconnect() {
+        viewModel.disconnect()
     }
 
 }

@@ -10,10 +10,7 @@ import com.empty.heartmonitor.ble.domain.BleDataDomain
 import com.empty.heartmonitor.ble.domain.BleRepository
 import com.empty.heartmonitor.ble.domain.BluetoothDeviceDomain
 import com.empty.heartmonitor.core.mapper.MapperBase
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import no.nordicsemi.android.ble.PhyRequest
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -26,13 +23,14 @@ class BaseBleRepository(
     private val mapperData: MapperBase<BleData, BleDataDomain>
 
 ) : BleRepository {
-    private val connectedDeviceChannel = Channel<BluetoothDeviceDomain>(Channel.BUFFERED)
-    override val connectedDevice: Flow<BluetoothDeviceDomain>
-        get() = connectedDeviceChannel.receiveAsFlow()
+    private val connectedDeviceChannel = MutableStateFlow<BluetoothDeviceDomain?>(null)
+    override val connectedDevice: StateFlow<BluetoothDeviceDomain?>
+        get() = connectedDeviceChannel.asStateFlow()
 
-    private val nearbyDevicesChannel = Channel<List<BluetoothDeviceDomain>>(Channel.BUFFERED)
-    override val listNearbyDevices: Flow<List<BluetoothDeviceDomain>>
-        get() = nearbyDevicesChannel.receiveAsFlow()
+    private val nearbyDevicesChannel = MutableStateFlow<List<BluetoothDeviceDomain>>(listOf())
+    override val listNearbyDevices: StateFlow<List<BluetoothDeviceDomain>>
+        get() = nearbyDevicesChannel.asStateFlow()
+
     override val bleData: Flow<BleDataDomain>
         get() = bleManager.bleDataFlow.map { mapperData.map(it) }
 
@@ -53,23 +51,26 @@ class BaseBleRepository(
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
-            Log.d("BaseBleRepository","onScanResult: ${result.device.name} ${result.device.bondState}")
+            Log.d(
+                "BaseBleRepository",
+                "onScanResult: ${result.device.name} ${result.device.bondState}"
+            )
             addDevice(result.device)
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun addDevice(device: BluetoothDevice) {
-        if (device.bondState == BluetoothDevice.BOND_BONDED){
-            connectedDeviceChannel.trySend(mapper.map(device))
+        if (device.bondState == BluetoothDevice.BOND_BONDED) {
+            connectedDeviceChannel.tryEmit(mapper.map(device))
         }
         if (listDevices.firstOrNull { it.address == device.address } == null) {
             listDevices.add(device)
-            nearbyDevicesChannel.trySend(mapper.map(listDevices))
+            nearbyDevicesChannel.tryEmit(mapper.map(listDevices))
         }
     }
 
-    override suspend fun connect(deviceAdders: String)  =
+    override suspend fun connect(deviceAdders: String) =
         suspendCoroutine<Unit> { cont ->
             listDevices.find { it.address == deviceAdders }?.let {
                 bleManager.connect(it) // Automatic retries are supported, in case of 133 error.
@@ -85,15 +86,33 @@ class BaseBleRepository(
                     .before { device -> }
                     .done { device ->
                         Log.d("BleManagerFragment", ": done ")
-                        connectedDeviceChannel.trySend(mapper.map(device))
+                        connectedDeviceChannel.tryEmit(mapper.map(device))
                         cont.resume(Unit)
                     }
-                    .fail { device, status -> Log.d("BleManagerFragment", ": fail ${status} ")
+                    .fail { device, status ->
+                        Log.d("BleManagerFragment", ": fail ${status} ")
                         cont.resumeWithException(Exception("${status}"))
                     }
                     .enqueue()
             }
 
         }
+
+    override suspend fun disconnect() {
+        suspendCoroutine<Unit> { cont ->
+            bleManager.disconnect().done { device ->
+                Log.d("BleManagerFragment", ": done ")
+                connectedDeviceChannel.tryEmit(null)
+                cont.resume(Unit)
+
+            }
+                .fail { device, status ->
+                    Log.d("BleManagerFragment", ": fail ${status} ")
+                    connectedDeviceChannel.tryEmit(null)
+                    cont.resume(Unit)
+                }.enqueue()
+        }
+
+    }
 
 }

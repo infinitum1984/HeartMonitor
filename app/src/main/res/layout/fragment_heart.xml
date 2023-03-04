@@ -6,18 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".heart.HeartFragment">
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/heartGif"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="48dp"
+        android:src="@drawable/heart_img" />
+
     <TextView
         android:id="@+id/heartRateTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
         android:layout_marginEnd="8dp"
         android:textAlignment="center"
         android:textSize="80sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/heartGif"
         tools:text="60" />
 
     <Button
@@ -54,7 +63,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Останнє вимірювання:"
+        android:text="Результат вимірювання:"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/masureInfo" />
 
@@ -66,7 +76,30 @@
         app:layout_constraintBottom_toBottomOf="@+id/textView3"
         app:layout_constraintStart_toEndOf="@+id/textView3"
         app:layout_constraintTop_toTopOf="@+id/textView3"
+        android:textSize="18sp"
         tools:text="60" />
+
+    <TextView
+        android:id="@+id/conclusionInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Заключення:"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/masuredTv" />
+
+    <TextView
+        android:id="@+id/conclusionTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/conclusionInfo"
+        app:layout_constraintStart_toEndOf="@+id/conclusionInfo"
+        app:layout_constraintTop_toTopOf="@+id/conclusionInfo"
+        tools:text="Показники в нормі" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/measureGroup"
