@@ -41,6 +41,7 @@
             </intent-filter>
         </activity>
         <service android:name=".ble.data.BluetoothLeService" />
+        <service android:name=".service.TrackingService" />
     </application>
 
 </manifest>

@@ -41,25 +41,33 @@ class TrackingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         if (requireContext().isServiceRunning(TrackingService::class.java)) {
             binding.button.text = "Зупинити відстежування"
-            binding.button.text = "0"
+            binding.button.tag = "0"
         } else {
-            binding.button.text = "1"
+            binding.button.tag = "1"
             binding.button.text = "Запустити відстежування"
         }
+        requireContext().applicationContext.startForegroundService(
+            Intent(
+                requireContext(),
+                TrackingService::class.java
+            )
+        )
         binding.button.setOnClickListener {
             when (binding.button.tag) {
-                "0" -> requireContext().stopService(
+                "0" -> requireContext().applicationContext.stopService(
                     Intent(
                         requireContext(),
                         TrackingService::class.java
                     )
                 )
-                "1" -> requireContext().startForegroundService(
-                    Intent(
-                        requireContext(),
-                        TrackingService::class.java
+                "1" -> {
+                    requireContext().applicationContext.startForegroundService(
+                        Intent(
+                            requireContext(),
+                            TrackingService::class.java
+                        )
                     )
-                )
+                }
             }
         }
     }
