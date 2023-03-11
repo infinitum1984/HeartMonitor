@@ -7,5 +7,7 @@ interface TrackingNotificationManager {
     fun bindForeground(service: Service)
     fun showHealthInfo(data: NotificationHealthData)
 
-    fun hide()
+    fun hideHealthInfo()
+
+    fun showPushNotification(title: String, text: String)
 }

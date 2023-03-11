@@ -55,7 +55,11 @@ class BaseBleRepository(
                 "BaseBleRepository",
                 "onScanResult: ${result.device.name} ${result.device.bondState}"
             )
-            addDevice(result.device)
+            try {
+                addDevice(result.device)
+            } catch (e: Exception) {
+
+            }
         }
     }
 

@@ -1,20 +1,26 @@
 package com.empty.heartmonitor.device.presentation
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.empty.heartmonitor.ble.domain.BleRepository
 import com.empty.heartmonitor.ble.domain.BluetoothDeviceDomain
+import com.empty.heartmonitor.core.ext.fetchToken
 import com.empty.heartmonitor.core.mapper.MapperBase
 import com.empty.heartmonitor.core.presentation.BaseViewModel
 import com.empty.heartmonitor.device.presentation.model.BluetoothDeviceUi
+import com.empty.heartmonitor.messaging.MessagingManager
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DeviceViewModel(
     private val bleRepository: BleRepository,
-    private val mapper: MapperBase<BluetoothDeviceDomain, BluetoothDeviceUi>
+    private val mapper: MapperBase<BluetoothDeviceDomain, BluetoothDeviceUi>,
+    private val messagingManager: MessagingManager
 ) : BaseViewModel() {
 
     private val _listDevices = MutableStateFlow<List<BluetoothDeviceUi>>(listOf())
@@ -24,6 +30,15 @@ class DeviceViewModel(
     val connectedDevice = _connectedDevice.asStateFlow()
 
     init {
+        launch {
+            val token = FirebaseMessaging.getInstance().fetchToken()
+            Log.d("D_DeviceViewModel", ": ${token}")
+            withContext(ioContext) {
+                messagingManager.sendMessage(token, "TEST", "TEST")
+            }
+        }
+
+
         bleRepository.listNearbyDevices.onEach {
             _listDevices.emit(mapper.map(it))
         }.launchIn(viewModelScope)

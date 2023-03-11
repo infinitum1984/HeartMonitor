@@ -17,7 +17,11 @@ import com.empty.heartmonitor.notification.model.NotificationHealthData
 class TrackingNotificationManagerBase(private val context: Context) : TrackingNotificationManager {
     companion object {
         private const val CHANNEL_ID = "0"
+        private const val CHANNEL_ID_PUSH = "1"
+
         private const val NOTIFICATION_ID = 1
+        private const val NOTIFICATION_PUSH = 2
+
     }
 
     private val notificationManager =
@@ -31,6 +35,13 @@ class TrackingNotificationManagerBase(private val context: Context) : TrackingNo
             val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
             mChannel.description = descriptionText
             notificationManager.createNotificationChannel(mChannel)
+            notificationManager.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_ID_PUSH,
+                    context.getString(R.string.channel_name) + "PUSH",
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+            )
         }
     }
 
@@ -65,8 +76,18 @@ class TrackingNotificationManagerBase(private val context: Context) : TrackingNo
         return customNotification
     }
 
-    override fun hide() {
+    override fun hideHealthInfo() {
         notificationManager.cancel(NOTIFICATION_ID)
+    }
+
+    override fun showPushNotification(title: String, text: String) {
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_PUSH)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setContentTitle(title)
+            .setContentText(text)
+            .build()
+        notificationManager.notify(NOTIFICATION_PUSH, notification)
     }
 
 }

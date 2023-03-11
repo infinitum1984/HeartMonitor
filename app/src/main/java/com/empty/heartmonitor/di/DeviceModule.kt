@@ -8,7 +8,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val deviceModule = module {
-    viewModel { DeviceViewModel(get(), get<BleDeviceDomainUiMapper>()) }
+    viewModel { DeviceViewModel(get(), get<BleDeviceDomainUiMapper>(), get()) }
     viewModel { HeartViewModel(get(), get()) }
     viewModel {
         TemperatureViewModel(get(), get())

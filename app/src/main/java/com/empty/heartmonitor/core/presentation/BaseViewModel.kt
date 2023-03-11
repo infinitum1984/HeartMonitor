@@ -1,5 +1,6 @@
 package com.empty.heartmonitor.core.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -16,6 +17,7 @@ abstract class BaseViewModel : ViewModel() {
     private val exceptionHandler: CoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, throwable ->
             launch {
+                Log.e("D_BaseViewModel", ": ${throwable.printStackTrace()}")
                 _error.send(throwable.message ?: throwable::class.java.name)
             }
         }
