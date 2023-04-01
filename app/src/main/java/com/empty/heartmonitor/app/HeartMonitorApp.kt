@@ -1,10 +1,7 @@
 package com.empty.heartmonitor.app
 
 import android.app.Application
-import com.empty.heartmonitor.di.bleModule
-import com.empty.heartmonitor.di.deviceModule
-import com.empty.heartmonitor.di.messagingModule
-import com.empty.heartmonitor.di.trackingModule
+import com.empty.heartmonitor.di.*
 import com.google.firebase.FirebaseApp
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -17,7 +14,7 @@ class HeartMonitorApp : Application() {
         startKoin {
             androidLogger()
             androidContext(applicationContext)
-            modules(listOf(deviceModule, bleModule, trackingModule, messagingModule))
+            modules(listOf(coreModule, deviceModule, bleModule, trackingModule, messagingModule))
         }
     }
 }

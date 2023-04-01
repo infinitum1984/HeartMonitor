@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class DeviceViewModel(
     private val bleRepository: BleRepository,
@@ -33,9 +32,6 @@ class DeviceViewModel(
         launch {
             val token = FirebaseMessaging.getInstance().fetchToken()
             Log.d("D_DeviceViewModel", ": ${token}")
-            withContext(ioContext) {
-                messagingManager.sendMessage(token, "TEST", "TEST")
-            }
         }
 
 

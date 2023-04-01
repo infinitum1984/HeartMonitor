@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/nav_track"
-        android:name="com.empty.heartmonitor.tracking.TrackingFragment"
+        android:name="com.empty.heartmonitor.tracking.presentation.TrackingFragment"
         android:label="@string/track"
         tools:layout="@layout/fragment_settings" />
     <fragment
