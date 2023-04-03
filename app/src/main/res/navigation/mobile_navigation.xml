@@ -27,4 +27,9 @@
         android:name="com.empty.heartmonitor.temperature.TemperatureFragment"
         android:label="@string/temperature"
         tools:layout="@layout/fragment_temperature" />
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.empty.heartmonitor.profile.ProfileFragment"
+        android:label="Профіль"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

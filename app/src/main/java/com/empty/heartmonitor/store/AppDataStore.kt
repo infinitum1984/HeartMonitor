@@ -1,10 +1,8 @@
 package com.empty.heartmonitor.store
 
+import android.os.Build
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -21,6 +19,10 @@ interface AppDataStore {
     suspend fun setLastSendMessageDate(date: Date)
 
     suspend fun getLastSendMessageDate(): Date
+
+    suspend fun getUserName(): String
+
+    suspend fun setUserName(name: String)
 
 }
 
@@ -49,10 +51,20 @@ class BaseAppDataStore(private val dataStore: DataStore<Preferences>) : AppDataS
     override suspend fun getLastSendMessageDate() =
         Date(dataStore.data.first()[LAST_MESSAGE_DATE] ?: 0)
 
+    override suspend fun getUserName(): String =
+        dataStore.data.first()[NAME] ?: "Користувач ${Build.MODEL}"
+
+    override suspend fun setUserName(name: String) {
+        dataStore.edit {
+            it[NAME] = name
+        }
+    }
+
     private companion object {
 
         val IS_MONITORING = booleanPreferencesKey("IS_MONITORING")
         val LAST_MESSAGE_DATE = longPreferencesKey("LAST_MESSAGE_DATE")
+        val NAME = stringPreferencesKey("NAME")
     }
 
 }
