@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.empty.heartmonitor.databinding.FragmentProfileBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -35,7 +36,14 @@ class ProfileFragment : Fragment() {
             binding.textToken.setText(it)
         }.launchIn(lifecycleScope)
         binding.saveBtn.setOnClickListener {
-            viewModel.saveName(binding.textName.text.toString())
+            if (binding.textName.text.toString().isEmpty()) {
+                Snackbar.make(binding.root, "Ім'я пусте, дані не збережено!", Snackbar.LENGTH_SHORT)
+                    .show()
+
+            } else {
+                viewModel.saveName(binding.textName.text.toString())
+                Snackbar.make(binding.root, "Дані збережено.", Snackbar.LENGTH_SHORT).show()
+            }
         }
         binding.textTokenLayout.setEndIconOnClickListener {
             shareToken(binding.textToken.text.toString())

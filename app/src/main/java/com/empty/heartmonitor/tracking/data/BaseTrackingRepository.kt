@@ -77,7 +77,7 @@ class BaseTrackingRepository(
             try {
                 messagingManager.sendMessage(
                     watcher.guid,
-                    "Критичні показники",
+                    "Критичні показники від ${dataStore.getUserName()}",
                     "${bleData.avgBpm}уд/хв ${bleData.temperature}°C"
                 )
                 delay(200)
