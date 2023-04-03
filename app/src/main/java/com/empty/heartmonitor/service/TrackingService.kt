@@ -56,7 +56,7 @@ class TrackingService : Service() {
 
     private suspend fun processData(bleDataDomain: BleDataDomain) {
         if (appDataStore.getIsMonitoring()) {
-            if ((Date().time - appDataStore.getLastSendMessageDate().time) > 1000 * 60 * 15) {
+            if ((Date().time - appDataStore.getLastSendMessageDate().time) > 1000 * 60) {
                 if (bleDataDomain.avgBpm < 60 || bleDataDomain.avgBpm > 120)
                     trackingRepository.sendAlertMessage(bleDataDomain)
             }

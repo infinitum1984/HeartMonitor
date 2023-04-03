@@ -110,18 +110,26 @@ fun AddWatcherDialog(onAddNewWatcher: (guid: String, name: String) -> Unit, onCl
         mutableStateOf(TextFieldValue(""))
     }
     AlertDialog(onDismissRequest = {},
-        title = {
-            Text(text = "Новий відстежувач")
-        },
         text = {
             Column {
-                TextField(label = { Text(text = "Ім'я") }, value = name, onValueChange = {
-                    name = it
-                })
+                Text(text = "Новий відстежувач", fontWeight = FontWeight.Bold, color = Color.Black)
+
+                Spacer(modifier = Modifier.size(8.dp))
+                TextField(
+                    colors = TextFieldDefaults.textFieldColors(textColor = Color.Black),
+                    label = { Text(text = "Ім'я", color = Color.Black) },
+                    value = name,
+                    onValueChange = {
+                        name = it
+                    })
                 Spacer(modifier = Modifier.size(4.dp))
-                TextField(label = { Text(text = "Токен") }, value = guid, onValueChange = {
-                    guid = it
-                })
+                TextField(
+                    colors = TextFieldDefaults.textFieldColors(textColor = Color.Black),
+                    label = { Text(text = "Токен", color = Color.Black) },
+                    value = guid,
+                    onValueChange = {
+                        guid = it
+                    })
             }
         },
         confirmButton = {

@@ -11,10 +11,12 @@ import com.empty.heartmonitor.messaging.MessagingManager
 import com.empty.heartmonitor.service.TrackingService
 import com.empty.heartmonitor.store.AppDataStore
 import com.empty.heartmonitor.tracking.domain.TrackingRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class BaseTrackingRepository(
@@ -73,12 +75,13 @@ class BaseTrackingRepository(
     }
 
     override suspend fun sendAlertMessage(bleData: BleDataDomain) {
+        val name = withContext(Dispatchers.IO) { dataStore.getUserName() }
         for (watcher in trackingDao.getAllWatchers()) {
             try {
                 messagingManager.sendMessage(
                     watcher.guid,
-                    "Критичні показники від ${dataStore.getUserName()}",
-                    "${bleData.avgBpm}уд/хв ${bleData.temperature}°C"
+                    "Критичні показники",
+                    "Критичні показники від ${name}\n${bleData.avgBpm}уд/хв ${bleData.temperature}°C"
                 )
                 delay(200)
                 dataStore.setLastSendMessageDate(Date())
